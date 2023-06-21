@@ -55,12 +55,17 @@ td {
 table {
     padding: 5px;
 }
-label, input {
+label {
+    padding-left: 21px;
+    padding-right: 3px;
+}
+input {
     padding-left: 3px;
     padding-right: 3px;
 }
 .unit {
     padding-left: 2px;
+    padding-right: 2px;
 }
 td {
     padding-left: 3px;
@@ -68,7 +73,7 @@ td {
 }
 
 /* Center numeric table cell data and input data. */
-td.numeric {
+td.ct {
     text-align: center;
 }
 input {
