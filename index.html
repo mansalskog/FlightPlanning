@@ -49,32 +49,38 @@
             <table>
                 <thead>
                     <tr>
+                        <td></td>
                         <td>From</td>
-                        <td>True track <span class="unit">[deg]</span></td>
-                        <td>Distance <span class="unit">[NM]</span></td>
+                        <td>TT <span class="unit">[deg]</span></td>
+                        <td>Dist. <span class="unit">[NM]</span></td>
                         <td>To</td>
-                        <td>Compass heading <span class="unit">[deg]</span></td>
-                        <td>Time on leg <span class="unit">[min]</span></td>
-                        <td>Fuel required <span class="unit">[l]</span></td>
+                        <td>CH <span class="unit">[deg]</span></td>
+                        <td>TOL <span class="unit">[min]</span></td>
+                        <td>Fuel req. <span class="unit">[l]</span></td>
                         <td>WCA</td>
                         <td>TH</td>
                         <td>GS</td>
                     </tr>
                 </thead>
                 <tr v-for="(leg, i) in route">
+                    <td>
+                        <input class="symbtn" type="button" value="+" @click="add_route_leg(i)">
+                        <input class="symbtn" type="button" value="-" @click="del_route_leg(i)">
+                    </td>
                     <td><input type="text" v-model="leg.from"></td>
                     <td><input type="number" v-model="leg.true_track"></td>
                     <td><input type="number" v-model="leg.distance"></td>
                     <td><input type="text" v-model="leg.to"></td>
-                    <td><strong>{{ route_info[i].compass_heading.toFixed(1) }}</strong></td>
-                    <td>{{ route_info[i].time_on_leg.toFixed(1) }}</td>
-                    <td>{{ route_info[i].fuel_required.toFixed(1) }}</td>
-                    <td>{{ route_info[i].wind_correction_angle.toFixed(1) }}</td>
-                    <td>{{ route_info[i].true_heading.toFixed(1) }}</td>
-                    <td>{{ route_info[i].ground_speed.toFixed(1) }}</td>
+                    <td class="numeric"><strong>{{ route_info[i].compass_heading.toFixed(1) }}</strong></td>
+                    <td class="numeric">{{ route_info[i].time_on_leg.toFixed(1) }}</td>
+                    <td class="numeric">{{ route_info[i].fuel_required.toFixed(1) }}</td>
+                    <td class="numeric">{{ route_info[i].wind_correction_angle.toFixed(1) }}</td>
+                    <td class="numeric">{{ route_info[i].true_heading.toFixed(1) }}</td>
+                    <td class="numeric">{{ route_info[i].ground_speed.toFixed(1) }}</td>
                 </tr>
                 <tfoot>
                     <tr>
+                        <td></td>
                         <td colspan="5">Total time and fuel required</td>
                         <td><strong>{{ time_on_route.toFixed(1) }}</strong></td>
                         <td><strong>{{ total_fuel_required.toFixed(1) }}</strong></td>
@@ -82,15 +88,6 @@
                     </tr>
                 <tfoot>
             </table>
-            <h2>ATC flight plan</h2>
-            <label for="atc_equipment">Equipment and capabilites (field 10)</label>
-            <input id="atc_equipment" type="text" v-model="aircraft.atc_equipment" disabled>
-            <br>
-            <label for="atc_other_info">Other information (field 18)</label>
-            <input id="atc_other_info" type="text" v-model="aircraft.atc_other_info" disabled>
-            <br>
-            <label for="atc_survial_info">Emergency and survival equipment (field 19)</label>
-            <input id="atc_survival_info" type="text" v-model="aircraft.atc_survival_info" disabled>
             <h2>Weight and Balance</h2>
             <label for="fuel_volume">Fuel volume (max {{ aircraft.max_fuel_volume.toFixed(1) }})</label>
             <input id="fuel_volume" type="number" v-model="fuel_volume">
@@ -106,36 +103,101 @@
                 </thead>
                 <tr>
                     <td>Basic Empty Weight</td>
-                    <td>{{ aircraft.bew.toFixed(1) }}</td>
-                    <td>{{ aircraft.arm['BEW'].toFixed(1) }}</td>
-                    <td>{{ moment('BEW').toFixed(1) }}</td>
+                    <td class="numeric">{{ aircraft.bew.toFixed(1) }}</td>
+                    <td class="numeric">{{ aircraft.arm['BEW'].toFixed(1) }}</td>
+                    <td class="numeric">{{ moment('BEW').toFixed(1) }}</td>
                 </tr>
                 <tr v-for="name in ['Front seats', 'Rear seats', 'Baggage']">
                     <td>{{ name }}</td>
-                    <td><input type="number" v-model="weight[name]"></td>
-                    <td>{{ aircraft.arm[name].toFixed(1) }}</td>
-                    <td>{{ moment(name).toFixed(1) }}</td>
+                    <td class="numeric"><input type="number" v-model="weight[name]"></td>
+                    <td class="numeric">{{ aircraft.arm[name].toFixed(1) }}</td>
+                    <td class="numeric">{{ moment(name).toFixed(1) }}</td>
                 </tr>
                 <tr>
                     <td>Fuel</td>
-                    <td>{{ fuel_volume }} l = {{ fuel_weight }} kg</td>
-                    <td>{{ aircraft.arm['Fuel'].toFixed(1) }}</td>
-                    <td>{{ moment('Fuel').toFixed(1) }}</td>
+                    <td class="numeric">{{ fuel_volume }} l = {{ fuel_weight }} kg</td>
+                    <td class="numeric">{{ aircraft.arm['Fuel'].toFixed(1) }}</td>
+                    <td class="numeric">{{ moment('Fuel').toFixed(1) }}</td>
                 </tr>
                 <tfoot>
                     <tr>
                         <td>Ramp</td>
-                        <td><strong>{{ ramp_weight.toFixed(1) }}</strong></td>
-                        <td><strong>{{ ramp_arm.toFixed(1) }}</strong></td>
-                        <td>{{ ramp_moment.toFixed(1) }}</td>
+                        <td class="numeric"><strong>{{ ramp_weight.toFixed(1) }}</strong></td>
+                        <td class="numeric"><strong>{{ ramp_arm.toFixed(1) }}</strong></td>
+                        <td class="numeric">{{ ramp_moment.toFixed(1) }}</td>
                     </tr>
                     <tr>
                         <td>Dry</td>
-                        <td><strong>{{ dry_weight.toFixed(1) }}</strong></td>
-                        <td><strong>{{ dry_arm.toFixed(1) }}</strong></td>
-                        <td>{{ dry_moment.toFixed(1) }}</td>
+                        <td class="numeric"><strong>{{ dry_weight.toFixed(1) }}</strong></td>
+                        <td class="numeric"><strong>{{ dry_arm.toFixed(1) }}</strong></td>
+                        <td class="numeric">{{ dry_moment.toFixed(1) }}</td>
                     </tr>
                 </tfoot>
+            </table>
+            <h2>ATC flight plan</h2>
+            <!-- TODO add proper time input and use local here, automatic conversion to UTC. -->
+            <label for="departure_time">Departure time (UTC)</label>
+            <input id="departure_time" type="text" v-model="departure_time">
+            <br>
+            <label for="cruise_level">Cruise level (altitude)</label>
+            <input id="cruise_level" type="text" v-model="cruise_level">
+            <span class="unit">[ft]</span>
+            <table>
+                <tr>
+                    <td>7</td>
+                    <td>Aircraft identification</td>
+                    <td>{{ reg.replace('-', '') }}</td>
+                </tr>
+                <!-- <tr>
+                    <td>8</td>
+                    <td>Flight rules and type of flight</td>
+                    <td>VG</td>
+                </tr> -->
+                <!-- <tr>
+                    <td>9</td>
+                    <td>Number and type of aircraft and wake turbulence category</td>
+                    <td>1 P28A L</td>
+                </tr> -->
+                <tr>
+                    <td>10</td>
+                    <td>Equipment and capabilities</td>
+                    <td>{{ aircraft.atc_equipment }}</td>
+                </tr>
+                <tr>
+                    <td>13</td>
+                    <td>Departure aerodrome and time</td>
+                    <td>{{ route[0].from + departure_time.replace(':', '') }}</td>
+                </tr>
+                <tr>
+                    <td>15a</td>
+                    <td>Cruising speed</td>
+                    <td>{{ 'N' + aircraft.cruise_speed.toFixed(0).padStart(4, '0') }}</td>
+                </tr>
+                <tr>
+                    <td>15b</td>
+                    <td>Cruising level</td>
+                    <td>{{ 'A' + (cruise_level / 100).toFixed(0).padStart(3, '0') }}</td>
+                </tr>
+                <tr>
+                    <td>15c</td>
+                    <td>Route</td>
+                    <td>{{ atc_route }}</td>
+                </tr>
+                <tr>
+                    <td>16</td>
+                    <td>Destination aerodrome and total EET</td>
+                    <td>{{ route[route.length - 1].to + formatted_eet }}</td>
+                </tr>
+                <tr>
+                    <td>18</td>
+                    <td>Other information</td>
+                    <td>{{ aircraft.atc_other_info }}</td>
+                </tr>
+                <tr>
+                    <td>19</td>
+                    <td>Emergency and survival equipment</td>
+                    <td>{{ aircraft.atc_survival_info }}</td>
+                </tr>
             </table>
         </div>
         <script src="main.js"></script>

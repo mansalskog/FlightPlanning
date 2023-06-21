@@ -12,7 +12,7 @@ function us_gal_to_l(gals) {
 }
 
 function mph_to_kt(mphs) {
-    return mphs / 1609.344 * 1852;
+    return mphs * 1609.344 / 1852;
 }
 
 function deg_to_rad(degs) {

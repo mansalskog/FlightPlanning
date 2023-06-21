@@ -28,6 +28,19 @@ function calc_route_info(wind_angle, wind_speed, variation, true_airspeed, fuel_
     return route_info;
 }
 
+function calc_atc_route(route) {
+    let atc_route = '';
+    for (let i = 0; i < route.length - 1; i++) {
+        atc_route += 'DCT ' + route[i].to + ' ';
+    }
+    atc_route += 'DCT';
+    return atc_route;
+}
+
+function minutes_to_eet_format(minutes) {
+    return (minutes / 60).toFixed(0).padStart(2, '0') + (minutes % 60).toFixed(0).padStart(2, '0');
+}
+
 function weight_of_9196ul(volume) {
     return volume * 0.72;
 }
@@ -35,20 +48,16 @@ function weight_of_9196ul(volume) {
 const { createApp, ref, computed } = Vue;
 createApp({
     setup() {
-        const weight = ref({
-            'Front seats': 0,
-            'Rear seats': 0,
-            'Baggage': 0
-        });
         const reg = ref('SE-EMW');
         const aircraft = computed(() => aircraft_data[reg.value]);
 
         /* Route Information */
-        const wind_angle = ref(90);
-        const wind_speed = ref(15);
-        const variation = ref(7);
+        const wind_angle = ref(90); // NOTE: example value
+        const wind_speed = ref(15); // NOTE: example value
+        const variation = ref(7); // NOTE: example value
         const route = ref([
             {from: 'ESSL', true_track: 170, distance: 6, to: 'VSN'},
+            {from: 'VSN', true_track: 350, distance: 6, to: 'ESSL'},
         ]);
         const route_info = computed(() =>
             calc_route_info(wind_angle.value, wind_speed.value, variation.value,
@@ -59,9 +68,24 @@ createApp({
         const total_fuel_required = computed(() =>
             route_info.value.map((leg) => leg.fuel_required).reduce((t, acc) => t + acc, 0));
 
+        function add_route_leg(i) {
+            route.value.splice(i + 1, 0, {from: '', true_track: 0, distance: 0, to: ''});
+        }
+
+        function del_route_leg(i) {
+            if (route.value.length > 1) {
+                route.value.splice(i, 1);
+            }
+        }
+
         /* Weight and Balance */
         const fuel_volume = ref(aircraft.value.max_fuel_volume.toFixed(1));
         const fuel_weight = computed(() => weight_of_9196ul(fuel_volume.value));
+        const weight = ref({
+            'Front seats': 160, // NOTE: example value
+            'Rear seats': 80, // NOTE: example value
+            'Baggage': 20, // NOTE: example value
+        });
         const moment = (name) => {
             if (name === 'BEW') {
                 return aircraft.value.bew * aircraft.value.arm[name];
@@ -82,6 +106,12 @@ createApp({
         const dry_arm = computed(() => dry_moment.value / dry_weight.value);
         const ramp_arm = computed(() => ramp_moment.value / ramp_weight.value);
 
+        /* ATC flight plan */
+        const departure_time = ref('12:00');
+        const cruise_level = ref(4500);
+        const atc_route = computed(() => calc_atc_route(route.value));
+        const formatted_eet = computed(() => minutes_to_eet_format(time_on_route.value));
+
         return {
             reg,
             aircraft,
@@ -93,6 +123,8 @@ createApp({
             route_info,
             time_on_route,
             total_fuel_required,
+            add_route_leg,
+            del_route_leg,
 
             weight,
             fuel_volume,
@@ -104,6 +136,11 @@ createApp({
             ramp_moment,
             dry_arm,
             ramp_arm,
+
+            departure_time,
+            cruise_level,
+            atc_route,
+            formatted_eet,
         };
     },
 }).mount('#app');

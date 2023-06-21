@@ -46,16 +46,43 @@ td {
     border: 1px solid black;    
 }
 
+/* Don't wrap text in table cells. */
+td {
+    white-space: nowrap;
+}
+
 /* Add more padding. */
 table {
     padding: 5px;
 }
-label, input, .unit {
+label, input {
+    padding-left: 3px;
+    padding-right: 3px;
+}
+.unit {
+    padding-left: 2px;
+}
+td {
     padding-left: 3px;
     padding-right: 3px;
 }
 
-/* Center table cell data. TODO only center numbers. */
-td {
+/* Center numeric table cell data and input data. */
+td.numeric {
     text-align: center;
+}
+input {
+    text-align: center;
+}
+
+/* Make buttons with symbols a consistent size. */
+input.symbtn {
+    width: 2em;
+}
+
+/* Make inputs in tables fill whole cell. */
+td > input[type=number], td > input[type=text] {
+    width: 100%; /* Important needed to override general input width rules above. */
+    margin: 0;
+    box-sizing: border-box;
 }
