@@ -104,17 +104,16 @@ createApp({
         const aircraft = computed(() => aircraft_data[reg.value]);
 
         /* Route Information */
-        const wind_angle = ref(90); // NOTE: example value
-        const wind_speed = ref(15); // NOTE: example value
-        const variation = ref(7); // NOTE: example value
+        const wind_angle = ref(0);
+        const wind_speed = ref(0);
+        const variation = ref(6);
 
         const date_of_flight = ref(current_local_date());
-        const departure_time = ref('12:00');
-        const cruise_altitude = ref(4500);
+        const departure_time = ref('00:00');
+        const cruise_altitude = ref(0);
 
         const route = ref([
             {from: 'ESSL', true_track: 170, distance: 6, to: 'VSN', altitude: 1500},
-            {from: 'VSN', true_track: 350, distance: 12, to: 'MOTALA', altitude: 3500},
         ]);
         const route_info = computed(() =>
             calc_route_info(wind_angle.value, wind_speed.value, variation.value,
@@ -127,7 +126,7 @@ createApp({
             route_info.value.map((leg) => leg.fuel_required).reduce((t, acc) => t + acc, 0));
 
         function add_route_leg(i) {
-            route.value.splice(i + 1, 0, {from: '', true_track: 0, distance: 0, to: ''});
+            route.value.splice(i + 1, 0, {from: '', true_track: 0, distance: 0, to: '', altitude: 0});
         }
 
         function del_route_leg(i) {
@@ -137,12 +136,12 @@ createApp({
         }
 
         /* Weight and Balance */
-        const fuel_volume = ref(aircraft.value.max_fuel_volume.toFixed(1));
+        const fuel_volume = ref(0);
         const fuel_weight = computed(() => weight_of_9196ul(fuel_volume.value));
         const weight = ref({
-            'Front seats': 160, // NOTE: example value
-            'Rear seats': 80, // NOTE: example value
-            'Baggage': 20, // NOTE: example value
+            'Front seats': 0,
+            'Rear seats': 0,
+            'Baggage': 0,
         });
         const moment = (name) => {
             if (name === 'BEW') {

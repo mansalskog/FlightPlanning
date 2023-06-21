@@ -66,6 +66,7 @@
                         <td>TT <span class="unit">[deg]</span></td>
                         <td>Dist. <span class="unit">[NM]</span></td>
                         <td>To</td>
+                        <td>Altitude <span class="unit">[ft]</span></td>
                         <td>CH <span class="unit">[deg]</span></td>
                         <td>ETO (local)</td>
                         <td>TOL <span class="unit">[min]</span></td>
@@ -85,6 +86,7 @@
                     <td><input type="number" v-model="leg.true_track"></td>
                     <td><input type="number" v-model="leg.distance"></td>
                     <td><input type="text" v-model="leg.to"></td>
+                    <td><input type="number" v-model="leg.altitude"></td>
                     <td class="ct"><strong>{{ route_info[i].compass_heading.toFixed(1) }}</strong></td>
                     <td class="ct">{{ route_info[i].estimated_time_over }}</td>
                     <td class="ct">{{ route_info[i].time_on_leg.toFixed(1) }}</td>
@@ -97,7 +99,7 @@
                 <tfoot>
                     <tr>
                         <td></td>
-                        <td class="ct" colspan="6">Total time and fuel required</td>
+                        <td class="ct" colspan="7">Total time and fuel required</td>
                         <td class="ct"><strong>{{ time_on_route.toFixed(1) }}</strong></td>
                         <td class="ct"><strong>{{ total_fuel_required.toFixed(1) }}</strong></td>
                         <td colspan="4"></td>
@@ -131,7 +133,7 @@
                 </tr>
                 <tr>
                     <td>Fuel</td>
-                    <td class="ct">{{ fuel_volume }} l = {{ fuel_weight }} kg</td>
+                    <td class="ct">{{ fuel_weight.toFixed(1) }}</td>
                     <td class="ct">{{ aircraft.arm['Fuel'].toFixed(1) }}</td>
                     <td class="ct">{{ moment('Fuel').toFixed(1) }}</td>
                 </tr>

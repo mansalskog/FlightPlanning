@@ -87,7 +87,7 @@ input.symbtn {
 
 /* Make inputs in tables fill whole cell. */
 td > input[type=number], td > input[type=text] {
-    width: 100%; /* Important needed to override general input width rules above. */
+    width: 8em;
     margin: 0;
     box-sizing: border-box;
 }
