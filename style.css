@@ -1,0 +1,61 @@
+/* Hide arrows/spinners on number inputs to reduce risk of mistakes. */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type=number] {
+    -moz-appearance:textfield;
+}
+
+/* Warning message. */
+#warning {
+    text-align: center;
+    padding: 3px;
+    border: 2px solid red;
+    border-radius: 6px;
+    margin-bottom: 2em;
+}
+#warning > h1 {
+    color: red;
+    display: inline;
+    font-size: 2em;
+    margin-left: 2em;
+    margin-right: 2em;
+}
+
+/* Center app. */
+#app {
+    width: 80%;
+    margin: 0 auto;
+}
+
+/* Make inputs less wide. */
+input[type=number] {
+    width: 6em;
+}
+input[type=text] {
+    width: 8em;
+}
+
+/* Add borders to table cells. */
+table {
+    border-collapse: collapse;
+}
+td {
+    border: 1px solid black;    
+}
+
+/* Add more padding. */
+table {
+    padding: 5px;
+}
+label, input, .unit {
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+/* Center table cell data. TODO only center numbers. */
+td {
+    text-align: center;
+}

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf8">
+        <title>Flight Planning</title>
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <link rel="stylesheet" href="style.css">
+        <script src="unit_conversion.js"></script>
+        <script src="aircraft_data.js"></script>
+    </head>
+    <body>
+        <div id="warning">
+            <h1>Warning!</h1>
+            <strong>Always</strong> verify calculations using an indepentent tool.
+            This software can and will produce <strong>incorrect</strong> results due to bugs or faulty input data.
+            The pilot is <strong>always</strong> responsible to for the safe and correct operation of the aircraft.
+            <h1>Warning!</h1>
+        </div>
+        <div id="app">
+            <label for="registration">Registration</label>
+            <select id="registration" v-model="reg">
+                <option>SE-MMZ</option>
+                <option>SE-LRL</option>
+                <option>SE-IUD</option>
+                <option>SE-KIT</option>
+                <option>SE-KMH</option>
+                <option>SE-EMW</option>
+            </select>
+            <h2>Route</h2>
+            <label for="wind_angle">Wind angle</label>
+            <input id="wind_angle" type="number" v-model="wind_angle">
+            <span class="unit">[deg]</span>
+            <br>
+            <label for="wind_speed">Wind speed</label>
+            <input id="wind_speed" type="number" v-model="wind_speed">
+            <span class="unit">[kt]</span>
+            <br>
+            <label for="magnetic_variation">Magnetic variation</label>
+            <input id="magnetic_variation" type="number" v-model="variation">
+            <span class="unit">[deg]</span>
+            <br>
+            <label for="cruise_airspeed">Cruise airspeed</label>
+            <input id="cruise_airspeed" type="number" :value="aircraft.cruise_speed.toFixed(1)" disabled>
+            <span class="unit">[kt]</span>
+            <br>
+            <label for="fuel_consumption">Fuel consumption</label>
+            <input id="fuel_consumption" type="number" :value="aircraft.fuel_consumption.toFixed(1)" disabled>
+            <span class="unit">[l/h]</span>
+            <table>
+                <thead>
+                    <tr>
+                        <td>From</td>
+                        <td>True track <span class="unit">[deg]</span></td>
+                        <td>Distance <span class="unit">[NM]</span></td>
+                        <td>To</td>
+                        <td>Compass heading <span class="unit">[deg]</span></td>
+                        <td>Time on leg <span class="unit">[min]</span></td>
+                        <td>Fuel required <span class="unit">[l]</span></td>
+                        <td>WCA</td>
+                        <td>TH</td>
+                        <td>GS</td>
+                    </tr>
+                </thead>
+                <tr v-for="(leg, i) in route">
+                    <td><input type="text" v-model="leg.from"></td>
+                    <td><input type="number" v-model="leg.true_track"></td>
+                    <td><input type="number" v-model="leg.distance"></td>
+                    <td><input type="text" v-model="leg.to"></td>
+                    <td><strong>{{ route_info[i].compass_heading.toFixed(1) }}</strong></td>
+                    <td>{{ route_info[i].time_on_leg.toFixed(1) }}</td>
+                    <td>{{ route_info[i].fuel_required.toFixed(1) }}</td>
+                    <td>{{ route_info[i].wind_correction_angle.toFixed(1) }}</td>
+                    <td>{{ route_info[i].true_heading.toFixed(1) }}</td>
+                    <td>{{ route_info[i].ground_speed.toFixed(1) }}</td>
+                </tr>
+                <tfoot>
+                    <tr>
+                        <td colspan="5">Total time and fuel required</td>
+                        <td><strong>{{ time_on_route.toFixed(1) }}</strong></td>
+                        <td><strong>{{ total_fuel_required.toFixed(1) }}</strong></td>
+                        <td colspan="3"></td>
+                    </tr>
+                <tfoot>
+            </table>
+            <h2>ATC flight plan</h2>
+            <label for="atc_equipment">Equipment and capabilites (field 10)</label>
+            <input id="atc_equipment" type="text" v-model="aircraft.atc_equipment" disabled>
+            <br>
+            <label for="atc_other_info">Other information (field 18)</label>
+            <input id="atc_other_info" type="text" v-model="aircraft.atc_other_info" disabled>
+            <br>
+            <label for="atc_survial_info">Emergency and survival equipment (field 19)</label>
+            <input id="atc_survival_info" type="text" v-model="aircraft.atc_survival_info" disabled>
+            <h2>Weight and Balance</h2>
+            <label for="fuel_volume">Fuel volume (max {{ aircraft.max_fuel_volume.toFixed(1) }})</label>
+            <input id="fuel_volume" type="number" v-model="fuel_volume">
+            <span class="unit">[l]</span>
+            <table>
+                <thead>
+                    <tr>
+                        <td>Item</td>
+                        <td>Weight <span class="unit">[kg]</span></td>
+                        <td>Arm <span class="unit">[cm]</span></td>
+                        <td>Moment <span class="unit">[kg cm]</span></td>
+                    </tr>
+                </thead>
+                <tr>
+                    <td>Basic Empty Weight</td>
+                    <td>{{ aircraft.bew.toFixed(1) }}</td>
+                    <td>{{ aircraft.arm['BEW'].toFixed(1) }}</td>
+                    <td>{{ moment('BEW').toFixed(1) }}</td>
+                </tr>
+                <tr v-for="name in ['Front seats', 'Rear seats', 'Baggage']">
+                    <td>{{ name }}</td>
+                    <td><input type="number" v-model="weight[name]"></td>
+                    <td>{{ aircraft.arm[name].toFixed(1) }}</td>
+                    <td>{{ moment(name).toFixed(1) }}</td>
+                </tr>
+                <tr>
+                    <td>Fuel</td>
+                    <td>{{ fuel_volume }} l = {{ fuel_weight }} kg</td>
+                    <td>{{ aircraft.arm['Fuel'].toFixed(1) }}</td>
+                    <td>{{ moment('Fuel').toFixed(1) }}</td>
+                </tr>
+                <tfoot>
+                    <tr>
+                        <td>Ramp</td>
+                        <td><strong>{{ ramp_weight.toFixed(1) }}</strong></td>
+                        <td><strong>{{ ramp_arm.toFixed(1) }}</strong></td>
+                        <td>{{ ramp_moment.toFixed(1) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Dry</td>
+                        <td><strong>{{ dry_weight.toFixed(1) }}</strong></td>
+                        <td><strong>{{ dry_arm.toFixed(1) }}</strong></td>
+                        <td>{{ dry_moment.toFixed(1) }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <script src="main.js"></script>
+    </body>
+</html>
